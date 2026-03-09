@@ -77,5 +77,6 @@ git reset --hard <commit>   # reset to commit (destructive)
 git remote -v               # list remotes
 git remote add origin <url> # add remote
 git fetch                   # fetch without merging
+git remote set-url origin https://github.com/user/repo.git
 ```
 
