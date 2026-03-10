@@ -42,7 +42,7 @@ CMD ["/bin/bash"]
 
 ```
 
-### if you found this error
+### if you encounter this error
 ```bash
 $ docker build -t $IMAGE_NAME:$LAST_TAG .
 ERROR: failed to build: Error response from daemon: client version 1.52 is too new. Maximum supported API version is 1.43: driver not connecting
