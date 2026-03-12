@@ -8,6 +8,11 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 ``` bash
     helm search repo prometheus-community
 ```
+### helm pull
+
+```bash
+helm pull longhorn/longhorn --untar
+```
 
 ## Before you deploy the Prometheus Helm chart, you can view all the YAML manifests by converting the chart to plain YAML files using the following command.
 ``` bash
