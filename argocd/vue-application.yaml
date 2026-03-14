@@ -1,0 +1,68 @@
+# applications/my-app.yaml
+# This is the recommended way to manage ArgoCD applications
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vue-kustomize-app
+  namespace: argocd
+  # Finalizer ensures resources are deleted when app is deleted
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project this application belongs to
+  project: default
+  
+  # Source repository and path
+  source:
+    repoURL: git@gitlab.apos.com:devops/gitops.git
+    targetRevision: main  # Branch, tag, or commit
+    path: overlays/dev     # Path within the repository
+
+    kustomize:
+      # Override images
+      images:
+        - vue-app=reg.apos.com/vue-project/vue:v1.1.0
+      
+      # Add name prefix/suffix
+      namePrefix: dev-
+      
+      # Add common labels
+      commonLabels:
+        environment: dev
+      
+      # Add common annotations
+      commonAnnotations:
+        deployment.kubernetes.io/revision: "1"
+  
+  # Destination cluster and namespace
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apos
+  
+  # Sync policy
+  syncPolicy:
+    # Automated sync - ArgoCD will automatically apply changes
+    automated:
+      # Prune resources that are no longer in Git
+      prune: true
+      # Self-heal - revert manual changes to match Git
+      selfHeal: true
+      # Only sync when git changes, not when cluster resources change
+      allowEmpty: false
+    
+    # Sync options
+    syncOptions:
+      # Create namespace if it doesn't exist
+      - CreateNamespace=true
+      # Apply resources server-side
+      - ServerSideApply=true
+      # Prune last to avoid issues
+      - PruneLast=true
+    
+    # Retry on failure
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

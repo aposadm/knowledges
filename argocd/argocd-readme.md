@@ -11,3 +11,7 @@
 ``` bash
 argocd admin initial-password -n argocd
 ```
+### 4. Accessing Argocd
+```bash
+    argocd login argocd.apos.com:80 --username admin --password xxxxx --insecure
+```

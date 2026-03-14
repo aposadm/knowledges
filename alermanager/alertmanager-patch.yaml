@@ -1,0 +1,11 @@
+# alertmanager-patch.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: prometheus-kube-prometheus-alertmanager
+  namespace: monitoring
+spec:
+  alertmanagerConfigSelector:
+    matchLabels:
+      alertmanagerConfig: slack         # matches label on AlertmanagerConfig
+  alertmanagerConfigNamespaceSelector: {}

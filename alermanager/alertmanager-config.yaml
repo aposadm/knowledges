@@ -1,0 +1,57 @@
+# alertmanager-config.yaml
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack-config
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: slack
+spec:
+  route:
+    groupBy: ["alertname"]
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: slack-critical
+    routes:
+      - matchers:
+          - name: severity
+            value: critical
+        receiver: slack-critical
+      - matchers:
+          - name: severity
+            value: warning
+        receiver: slack-warnings
+
+  receivers:
+    - name: slack-critical
+      slackConfigs:
+        - apiURL:
+            name: alertmanager-slack-webhook      # reference to secret
+            key: slack-webhook-url
+          channel: "#alerts-channel"
+          sendResolved: true
+          iconEmoji: ":fire:"
+          username: "Prometheus Alertmanager"
+          title: "[CRITICAL] {{ .GroupLabels.alertname }}"
+          text: |
+            *Severity:* `{{ .CommonLabels.severity }}`
+            {{ range .Alerts }}
+            *Summary:* {{ .Annotations.summary }}
+            *Description:* {{ .Annotations.description }}
+            {{ end }}
+
+    - name: slack-warnings
+      slackConfigs:
+        - apiURL:
+            name: alertmanager-slack-webhook      # reference to secret
+            key: slack-webhook-url
+          channel: "#alerts-channel"
+          sendResolved: true
+          iconEmoji: ":warning:"
+          username: "Prometheus Alertmanager"
+          title: "[WARNING] {{ .GroupLabels.alertname }}"
+          text: |
+            {{ range .Alerts }}
+            *Summary:* {{ .Annotations.summary }}
+            {{ end }}
